@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<body>
+    <style>
+        #loading {
+            display: none;
+            position: absolute;
+            z-index: 1;
+        }
+        form {
+            z-index: 2;
+            position: absolute;
+        }
+    </style>
+
+    <div class="message_holder"></div>
+
+    <form action="" method="POST">
+          <input type="text" class="article" placeholder="Start article"/>
+          <input type="submit"/>
+    </form>
+
+    <div id="loading">Loading...</div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+
+    <script type="text/javascript">
+        let socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        socket.on( 'connect', () => {
+          $( 'form' ).on( 'submit', function( e ) {
+            e.preventDefault();
+            let start = $( 'input.article' ).val();
+            socket.emit('check article', start);
+            $('form').fadeOut();
+            $('#loading').fadeIn();
+          });
+        });
+
+        socket.on('article return', (msg) => {
+           console.log(msg);
+           $('#loading').fadeOut();
+           $('form').fadeIn();
+        });
+
+        socket.on( 'my response', function( msg ) {
+            console.log( msg );
+            if( typeof msg.user_name !== 'undefined' ) {
+              $( 'h3' ).remove();
+              $( 'div.message_holder' ).append( '<div><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</div>' )
+            }
+        });
+
+    </script>
+</body>
+</html>

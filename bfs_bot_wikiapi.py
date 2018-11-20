@@ -97,8 +97,6 @@ def get_article(prompt_text):
 start_title = get_article("Start article:")
 end_title = get_article("End article:")
 
-print(start_title, end_title)
-
 bfs_results = bfs(start_title, end_title)
 print(bfs_results[0])
 print(" --> ".join(bfs_results[1]))
