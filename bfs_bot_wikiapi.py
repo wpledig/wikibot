@@ -61,22 +61,41 @@ def bfs(s_title, e_title):
                 queue.append(nbr)
 
 
-# to run the program:
-start_title = None
-while not start_title:
-    search_results = wikipedia.search(input("Start article:"))
-    if search_results:
-        start_title = search_results[0]
-    else:
-        print("Invalid search, try again!")
+def get_article(prompt_text):
+    """
+    Used for searching for articles based on user input
+    :param prompt_text: text to prompt the user for input
+    """
+    return_article = None
+    # make sure article is valid before being returned
+    while not return_article:
+        # get user input
+        query = input(prompt_text)
+        # if something inputted, use it
+        if query:
+            search_results = wikipedia.search(query, 1)
+            # if search returns results
+            if search_results:
+                return_article = search_results[0]
+                # make sure page is not disambiguation
+                try:
+                    wikipedia.summary(return_article, 1)
+                except wikipedia.DisambiguationError:
+                    print("Be more specific!")
+                    return_article = None
+            # throw error if search doesn't work
+            else:
+                print("Invalid search, try again!")
+        # if nothing inputted, choose random article
+        else:
+            return_article = wikipedia.random()
+    print("Found article:", return_article)
+    return return_article
 
-end_title = None
-while not end_title:
-    search_results = wikipedia.search(input("End article:"))
-    if search_results:
-        end_title = search_results[0]
-    else:
-        print("Invalid search, try again!")
+
+# to run the program:
+start_title = get_article("Start article:")
+end_title = get_article("End article:")
 
 print(start_title, end_title)
 
